@@ -13,6 +13,7 @@ import App from './views/App.vue';
 import Home from './components/Home.vue';
 import Clientes from './views/Clientes.vue';
 import Vehiculos from './views/Vehiculos.vue';
+import UsersIndex from './views/UsersIndex';
 import UsersCreate from './views/UsersCreate';
 import UsersEdit from './views/UsersEdit';
 import NotFound from './views/NotFound';
@@ -37,16 +38,21 @@ const router = new VueRouter({
             name: 'vehiculos',
             component: Vehiculos,
         },
-        {
-            path: '/users/create',
-            name: 'users.create',
-            component: UsersCreate,
-        },
-        {
-            path: '/users/:id/edit',
-            name: 'users.edit',
-            component: UsersEdit,
-        },
+        // {
+        //     path: '/users',
+        //     name: 'users.index',
+        //     component: UsersIndex,
+        // },
+        // {
+        //     path: '/users/create',
+        //     name: 'users.create',
+        //     component: UsersCreate,
+        // },
+        // {
+        //     path: '/users/:id/edit',
+        //     name: 'users.edit',
+        //     component: UsersEdit,
+        // },
         { path: '/404', name: '404', component: NotFound },
         { path: '*', redirect: '/404' },
     ],
@@ -64,6 +70,7 @@ const router = new VueRouter({
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
 Vue.component('example-component', require('./components/ExampleComponent.vue').default);
+
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

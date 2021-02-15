@@ -1,5 +1,7 @@
 <template>
+  
   <div class="users">
+
     <div v-if="error" class="error">
       <p>{{ error }}</p>
     </div>
@@ -31,6 +33,7 @@
 </template>
 <script>
 import axios from "axios";
+
 
 const getUsers = (page, callback) => {
   const params = { page };

@@ -30,10 +30,21 @@
     <hr />
     <!-- mensaje de respuesta -->
     <div v-if="message" class="w3-panel w3-pale-blue w3-display-container">
-      <span v-on:click="limpiar_mensajes()" class="w3-button w3-large w3-display-topright">&times;</span>
+      <span v-on:click="cerrar()" class="w3-button w3-large w3-display-topright">&times;</span>
       <p>
         {{ message }}
       </p>
+    </div>
+
+    <!-- bandera leyendo informacion  -->
+    <div v-if="loading_listar" class="w3-panel w3-blue w3-display-container">
+      <p>Loading...</p>
+    </div>
+
+    <!-- mensaje de error  en el servidor-->
+    <div v-if="error" class="w3-panel w3-red w3-display-container">
+      <span v-on:click="cerrar()" class="w3-button w3-large w3-display-topright">&times;</span>
+      <p>{{ error }}</p>
     </div>
 
     <!-- listado de clientes -->
@@ -70,7 +81,9 @@
             </button>
           </td>
           <td>
-              <button class="w3-button w3-highway-red" v-on:click="eliminar(item)"> Eliminar </button>
+            <button class="w3-button w3-highway-red" v-on:click="eliminar(item)">
+              Eliminar
+            </button>
           </td>
         </tr>
       </table>
@@ -96,15 +109,15 @@
         </header>
 
         <div class="w3-container">
-          <div v-if="error" class="w3-panel w3-red w3-display-container">
-            <p>{{ error }}</p>
-          </div>
 
+
+          <!-- formulario -->
           <form v-on:submit.prevent="create()">
             <p>
-              <input v-model="numero_documento" class="w3-input w3-border" maxlength="50" type="text"
-                placeholder="Número Documento " required />
+              <input v-model="numero_documento" v-bind:class="{'w3-border-red': error_numero_documento}"
+                class="w3-input w3-border" type="text" maxlength="50" placeholder="Número Documento " required />
             </p>
+            <p v-if="error_numero_documento" class="w3-text-red">{{ error_numero_documento }}</p>
             <p>
               <input v-model="nombre" class="w3-input w3-border" type="text" maxlength="50" placeholder="Nombre"
                 required />
@@ -115,9 +128,10 @@
             </p>
             <h4>Datos del vehículo</h4>
             <p>
-              <input v-model="placa" class="w3-input w3-border" type="text" maxlength="50" placeholder="Placa - Serial"
-                required />
+              <input v-model="placa" v-bind:class="{'w3-border-red': error_placa}" class="w3-input w3-border"
+                type="text" maxlength="50" placeholder="Placa - Serial" required />
             </p>
+            <p v-if="error_placa" class="w3-text-red">{{ error_placa }}</p>
 
             <p>
               <select class="w3-select w3-border" required v-model="tipo">
@@ -147,18 +161,22 @@
         </header>
 
         <div class="w3-container">
-          <div v-if="error" class="w3-panel w3-red w3-display-container">
-            <p>{{ error }}</p>
-          </div>
+
+          <!-- leyendo informacion -->
           <div v-if="loading" class="w3-panel w3-blue w3-display-container">
             <p>Loading...</p>
           </div>
+
+
+          <!-- formulario -->
           <form v-on:submit.prevent="update()">
             <label for="numero_documento">Número de documento </label>
             <p>
-              <input v-model="numero_documento" class="w3-input w3-border" maxlength="50" type="text"
-                placeholder="Número Documento " required id="numero_documento" />
+              <input v-model="numero_documento" v-bind:class="{'w3-border-red': error_numero_documento}"
+                class="w3-input w3-border" maxlength="50" type="text" placeholder="Número Documento " required
+                id="numero_documento" />
             </p>
+            <p v-if="error_numero_documento" class="w3-text-red">{{ error_numero_documento }}</p>
             <label for="nombre">Nombre</label>
             <p>
               <input v-model="nombre" class="w3-input w3-border" type="text" maxlength="50" placeholder="Nombre"
@@ -175,6 +193,7 @@
               </button>
             </p>
           </form>
+
         </div>
       </div>
     </div>
@@ -187,14 +206,13 @@
           <h3>Datos del vehículo</h3>
         </header>
         <div class="w3-container">
-          <div v-if="error" class="w3-panel w3-red w3-display-container">
-            <p>{{ error }}</p>
-          </div>
+
           <form v-on:submit.prevent="agregar_vehiculo()">
             <p>
-              <input v-model="placa" class="w3-input w3-border" type="text" maxlength="50" placeholder="Placa - Serial"
-                required />
+              <input v-model="placa" v-bind:class="{'w3-border-red': error_placa}" class="w3-input w3-border "
+                type="text" maxlength="50" placeholder="Placa - Serial" required />
             </p>
+            <p v-if="error_placa" class="w3-text-red">{{ error_placa }}</p>
 
             <p>
               <select class="w3-select w3-border" required v-model="tipo">
@@ -267,10 +285,13 @@
         cliente_id: "",
         vehiculos: [],
         //mensajes
+        message: false,
         error: false,
         loading: false,
         saving: false,
-        message: false,
+        loading_listar: false,
+        error_numero_documento: false,
+        error_placa: false,
       };
     },
     created() {
@@ -278,22 +299,21 @@
     },
     methods: {
       listar() {
-        this.error = this.users = null;
-        this.loading = true;
+        this.loading_listar = true;
         axios
           .get("/api/clientes")
           .then((response) => {
-            this.loading = false;
+            this.loading_listar = false;
             this.clientes = response.data.data;
           })
           .catch((error) => {
-            this.loading = false;
-            this.error = error.response.data.message || error.message;
+            this.loading_listar = false;
+            this.error = 'Error interno en el servidor, intente más tarde';
           });
       },
       create($event) {
         this.saving = true;
-        this.message = false;
+
         let datos = {
           numero_documento: this.numero_documento,
           nombre: this.nombre,
@@ -301,66 +321,96 @@
           placa: this.placa.toUpperCase(),
           tipo: this.tipo,
         };
+
         api_cliente
           .create(datos)
           .then(() => {
+            this.cerrar();
             this.message = "Cliente registrado con éxito";
-            this.error = false;
-            this.cancelar();
+            this.listar();
           })
-          .catch((e) => {
-            this.error =
-              e.response.data.message || "Hubo un problema al crear el cliente.";
+          .catch((error) => {
+            if (error.response.status == 422) {
+
+              if (error.response.data.errors.numero_documento != undefined) {
+                this.error_numero_documento = error.response.data.errors.numero_documento[0];
+              }
+
+              if (error.response.data.errors.placa != undefined) {
+                this.error_placa = error.response.data.errors.placa[0];
+              }
+            } else {
+              this.cerrar();
+              this.error = 'Error interno en el servidor, intente más tarde';
+            }
+
           })
           .then(() => (this.saving = false));
       },
       update($event) {
         this.saving = true;
-        this.message = false;
-        this.error = false;
+
         let datos = {
           numero_documento: this.numero_documento,
           nombre: this.nombre,
           apellidos: this.apellidos,
         };
+
         api_cliente
           .update(this.id, datos)
           .then(() => {
             this.message = "Cliente actualizado con éxito";
             this.cancelar();
+            this.listar();
           })
-          .catch((e) => {
-            this.error =
-              e.response.data.message ||
-              "Hubo un problema al actualizar el cliente.";
+          .catch((error) => {
+            if (error.response.status == 422) {
+              if (error.response.data.errors.numero_documento != undefined) {
+                this.error_numero_documento = error.response.data.errors.numero_documento[0];
+              }
+            } else {
+              this.cerrar();
+              this.error = 'Error interno en el servidor, intente más tarde';
+            }
+
           })
           .then(() => (this.saving = false));
       },
       eliminar(objeto) {
         this.saving = true;
-        api_cliente.delete(objeto.id).then((response) => {
-          this.message = "Cliente Deleted";
-          this.listar();
-        }).catch((e) => {
-            this.message = e.response.data.message || "Hubo un problema al cargar los datos.";
-          });;
+        api_cliente
+          .delete(objeto.id)
+          .then((response) => {
+            this.message = "Cliente eliminado con éxito";
+            this.listar();
+          })
+          .catch((error) => {
+            this.cerrar();
+            if (error.response.status == 403) {
+              this.error = error.response.data.message || "Hubo un problema al cargar los datos.";
+            }else{
+              this.error = 'Error interno en el servidor, intente más tarde';
+            }
+
+          });
       },
       abrirModalEditar(objeto) {
         document.getElementById("id02").style.display = "block";
+        this.limpiar_mensajes();
         this.loading = true;
         this.id = objeto.id;
         api_cliente
           .find(this.id)
           .then((response) => {
             this.loading = false;
-            //cargar los datos
             this.numero_documento = response.data.data.numero_documento;
             this.nombre = response.data.data.nombre;
             this.apellidos = response.data.data.apellidos;
           })
           .catch((e) => {
-            this.error =
-              e.response.data.message || "Hubo un problema al cargar los datos.";
+            //this.error =   e.response.data.message || "Hubo un problema al cargar los datos.";
+            this.cerrar();
+            this.error = "Error interno en el servidor, intente más tarde"
           });
       },
       abrirModalAgregarVehiculo(objeto) {
@@ -378,13 +428,19 @@
         api_vehiculo
           .create(datos)
           .then(() => {
-            this.message = "Vehiculo registrado con éxito";
-            this.error = false;
-            this.cancelar();
+            this.cerrar();
+            this.message = "Vehículo registrado con éxito";
+            this.listar();
           })
-          .catch((e) => {
-            this.error =
-              e.response.data.message || "Hubo un problema al crear el vehiculo.";
+          .catch((error) => {
+            if (error.response.status == 422) {
+              if (error.response.data.errors.placa != undefined) {
+                this.error_placa = error.response.data.errors.placa[0];
+              }
+            } else {
+              this.cerrar();
+              this.error = 'Error interno en el servidor, intente más tarde';
+            }
           })
           .then(() => (this.saving = false));
       },
@@ -398,9 +454,9 @@
             this.loading = false;
             this.vehiculos = response.data.data;
           })
-          .catch((e) => {
-            this.error =
-              e.response.data.message || "Hubo un problema al cargar los datos.";
+          .catch((error) => {
+            this.cerrar();
+            this.error = 'Error interno en el servidor, intente más tarde';
           });
       },
       cerrar: function () {
@@ -423,10 +479,13 @@
         document.getElementById("id04").style.display = "none";
       },
       limpiar_mensajes: function () {
+        this.message = false;
         this.error = false;
         this.loading = false;
         this.saving = false;
-        this.message = false;
+        this.loading_listar = false
+        this.error_numero_documento = false;
+        this.error_placa = false;
       },
     },
   };

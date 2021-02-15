@@ -5,11 +5,25 @@ namespace App\Http\Controllers\api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Resources\ClienteResource;
+use Illuminate\Support\Facades\Auth;
 use App\Cliente;
 use App\Vehiculo;
 
 class ClientesController extends Controller
 {
+
+    public function __construct()
+    {
+        // $datos = [
+        //     'email' => "druped@hotmail.com",
+        //     'password' => "123456"
+        // ];
+
+        // $respuesta = Auth::attempt($datos);
+        // $this->middleware('auth');
+    }
+
+
     /**
      * Display a listing of the resource.
      *
@@ -17,7 +31,7 @@ class ClientesController extends Controller
      */
     public function index()
     {
-        return ClienteResource::collection(Cliente::paginate(10));
+        return ClienteResource::collection(Cliente::paginate(50));
     }
 
     /**
@@ -94,7 +108,7 @@ class ClientesController extends Controller
         ]);
 
         $cliente->update($data);
-
+        
         return new ClienteResource($cliente);
     }
 
