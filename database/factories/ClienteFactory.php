@@ -9,6 +9,6 @@ $factory->define(Cliente::class, function (Faker $faker) {
     return [
         'numero_documento' => $faker->unique()->randomNumber(5),
         'nombre' => $faker->firstName(),
-        'apellidos' => $faker->lastName,
+        'apellidos' => $faker->lastName(),
     ];
 });

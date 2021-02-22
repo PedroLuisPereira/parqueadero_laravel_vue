@@ -28,9 +28,17 @@
 </head>
 <body>
     <div id="app">
-        <app></app>
+         <app></app>
     </div>
-
+    <script>
+        //recuperar token
+        let token = "{{ session('token') }}" ? "{{ session('token') }}":'';
+        if(token){
+             localStorage.setItem('token', token)
+        }
+    </script>
     <script src="{{ mix('js/app.js') }}"></script>
+
+
 </body>
 </html>

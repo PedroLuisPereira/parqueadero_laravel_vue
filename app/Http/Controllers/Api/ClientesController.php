@@ -14,13 +14,7 @@ class ClientesController extends Controller
 
     public function __construct()
     {
-        // $datos = [
-        //     'email' => "druped@hotmail.com",
-        //     'password' => "123456"
-        // ];
-
-        // $respuesta = Auth::attempt($datos);
-        // $this->middleware('auth');
+        $this->middleware('auth:api');
     }
 
 
@@ -99,10 +93,8 @@ class ClientesController extends Controller
      */
     public function update(Cliente $cliente, Request $request)
     {
-        $id =  $cliente->id;
-
         $data = $request->validate([
-            'numero_documento' => "required|unique:clientes,numero_documento,$id",
+            'numero_documento' => "required|unique:clientes,numero_documento,$cliente->id",
             'nombre' => 'required',
             'apellidos' => 'required',
         ]);

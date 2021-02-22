@@ -8,10 +8,10 @@
       <router-link :to="{ name: 'vehiculos' }" class="w3-bar-item w3-button w3-mobile" >Servicios</router-link>
       <router-link :to="{ name: 'vehiculos' }" class="w3-bar-item w3-button w3-mobile" >Tarifas</router-link>
       <router-link :to="{ name: 'vehiculos' }" class="w3-bar-item w3-button w3-mobile" >Usuarios</router-link>
-      <router-link :to="{ name: 'vehiculos' }" class="w3-bar-item w3-button w3-mobile" >Cuenta</router-link>
+      <router-link :to="{ name: 'vehiculos' }" class="w3-bar-item w3-button w3-mobile w3-right" >Cuenta</router-link>
     </div>
 
-    <div class="contenido">
+    <div class="w3-container">
       <router-view></router-view>
     </div>
   </div>

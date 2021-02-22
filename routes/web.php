@@ -17,6 +17,11 @@ use Illuminate\Support\Facades\Route;
 //     return view('welcome');
 // });
 
+//autenticacion 
+Route::get('/login', 'AuthController@formulario')->middleware('guest')->name('auth.formulario');
+Route::post('/login', 'AuthController@login')->middleware('guest')->name('auth.login');
+Route::get('/logout', 'AuthController@logout')->middleware('auth')->name('auth.logout');
+Route::post('/logout', 'AuthController@logout')->middleware('auth')->name('auth.logout');
 
-
+//rutas de la spa
 Route::get('/{any}', 'SpaController@index')->where('any', '.*');

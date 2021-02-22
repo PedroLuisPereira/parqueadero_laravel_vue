@@ -2279,6 +2279,20 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -2313,7 +2327,7 @@ __webpack_require__.r(__webpack_exports__);
       var _this = this;
 
       this.loading_listar = true;
-      axios.get("/api/clientes").then(function (response) {
+      axios.get("/api/clientes?api_token=" + localStorage.getItem('token')).then(function (response) {
         _this.loading_listar = false;
         _this.clientes = response.data.data;
       })["catch"](function (error) {
@@ -2332,7 +2346,7 @@ __webpack_require__.r(__webpack_exports__);
         placa: this.placa.toUpperCase(),
         tipo: this.tipo
       };
-      _api_clientes_js__WEBPACK_IMPORTED_MODULE_0__["default"].create(datos).then(function () {
+      axios.post("/api/clientes?api_token=" + localStorage.getItem('token'), datos).then(function () {
         _this2.cerrar();
 
         _this2.message = "Cliente registrado con éxito";
@@ -2365,10 +2379,10 @@ __webpack_require__.r(__webpack_exports__);
         nombre: this.nombre,
         apellidos: this.apellidos
       };
-      _api_clientes_js__WEBPACK_IMPORTED_MODULE_0__["default"].update(this.id, datos).then(function () {
-        _this3.message = "Cliente actualizado con éxito";
+      axios.put("/api/clientes/".concat(this.id) + "?api_token=" + localStorage.getItem('token'), datos).then(function () {
+        _this3.cerrar();
 
-        _this3.cancelar();
+        _this3.message = "Cliente actualizado con éxito";
 
         _this3.listar();
       })["catch"](function (error) {
@@ -2389,7 +2403,10 @@ __webpack_require__.r(__webpack_exports__);
       var _this4 = this;
 
       this.saving = true;
-      _api_clientes_js__WEBPACK_IMPORTED_MODULE_0__["default"]["delete"](objeto.id).then(function (response) {
+      this.id = objeto.id;
+      axios["delete"]("/api/clientes/".concat(this.id) + "?api_token=" + localStorage.getItem('token')).then(function (response) {
+        _this4.cerrar();
+
         _this4.message = "Cliente eliminado con éxito";
 
         _this4.listar();
@@ -2410,7 +2427,7 @@ __webpack_require__.r(__webpack_exports__);
       this.limpiar_mensajes();
       this.loading = true;
       this.id = objeto.id;
-      _api_clientes_js__WEBPACK_IMPORTED_MODULE_0__["default"].find(this.id).then(function (response) {
+      axios.get("/api/clientes/".concat(objeto.id) + "?api_token=" + localStorage.getItem('token')).then(function (response) {
         _this5.loading = false;
         _this5.numero_documento = response.data.data.numero_documento;
         _this5.nombre = response.data.data.nombre;
@@ -2436,7 +2453,7 @@ __webpack_require__.r(__webpack_exports__);
         tipo: this.tipo,
         cliente_id: this.id
       };
-      _api_vehiculos_js__WEBPACK_IMPORTED_MODULE_1__["default"].create(datos).then(function () {
+      axios.post('/api/vehiculos', datos).then(function () {
         _this6.cerrar();
 
         _this6.message = "Vehículo registrado con éxito";
@@ -2462,7 +2479,7 @@ __webpack_require__.r(__webpack_exports__);
       document.getElementById("id04").style.display = "block";
       this.loading = true;
       this.id = objeto.id;
-      _api_vehiculos_js__WEBPACK_IMPORTED_MODULE_1__["default"].find_cliente(this.id).then(function (response) {
+      axios.get("/api/vehiculos_cliente/".concat(this.id)).then(function (response) {
         _this7.loading = false;
         _this7.vehiculos = response.data.data;
       })["catch"](function (error) {
@@ -39544,7 +39561,7 @@ var render = function() {
         _c(
           "router-link",
           {
-            staticClass: "w3-bar-item w3-button w3-mobile",
+            staticClass: "w3-bar-item w3-button w3-mobile w3-right",
             attrs: { to: { name: "vehiculos" } }
           },
           [_vm._v("Cuenta")]
@@ -39553,7 +39570,7 @@ var render = function() {
       1
     ),
     _vm._v(" "),
-    _c("div", { staticClass: "contenido" }, [_c("router-view")], 1)
+    _c("div", { staticClass: "w3-container" }, [_c("router-view")], 1)
   ])
 }
 var staticRenderFns = []
@@ -39601,44 +39618,50 @@ var render = function() {
               [_vm._v("×")]
             ),
             _vm._v(" "),
-            _c("p", [_vm._v("\n      " + _vm._s(_vm.message) + "\n    ")])
+            _c("p", [_vm._v("\n         " + _vm._s(_vm.message) + "\n      ")])
           ]
         )
       : _vm._e(),
     _vm._v(" "),
     _vm.loading_listar
-      ? _c("div", { staticClass: "w3-panel w3-blue w3-display-container" }, [
-          _c("p", [_vm._v("Loading...")])
-        ])
+      ? _c(
+          "div",
+          { staticClass: "w3-panel w3-pale-green w3-display-container" },
+          [_c("p", [_vm._v("Loading...")])]
+        )
       : _vm._e(),
     _vm._v(" "),
     _vm.error
-      ? _c("div", { staticClass: "w3-panel w3-red w3-display-container" }, [
-          _c(
-            "span",
-            {
-              staticClass: "w3-button w3-large w3-display-topright",
-              on: {
-                click: function($event) {
-                  return _vm.cerrar()
+      ? _c(
+          "div",
+          { staticClass: "w3-panel w3-pale-red w3-display-container" },
+          [
+            _c(
+              "span",
+              {
+                staticClass: "w3-button w3-large w3-display-topright",
+                on: {
+                  click: function($event) {
+                    return _vm.cerrar()
+                  }
                 }
-              }
-            },
-            [_vm._v("×")]
-          ),
-          _vm._v(" "),
-          _c("p", [_vm._v(_vm._s(_vm.error))])
-        ])
+              },
+              [_vm._v("×")]
+            ),
+            _vm._v(" "),
+            _c("p", [_vm._v(_vm._s(_vm.error))])
+          ]
+        )
       : _vm._e(),
     _vm._v(" "),
-    _c("h2", [_vm._v("Clientes Registrados")]),
+    _vm._m(1),
     _vm._v(" "),
     _c("div", { staticClass: "w3-responsive w3-margin-bottom" }, [
       _c(
         "table",
         { staticClass: "w3-table-all" },
         [
-          _vm._m(1),
+          _vm._m(2),
           _vm._v(" "),
           _vm._l(_vm.clientes, function(item) {
             return _c("tr", { key: item.id }, [
@@ -39659,7 +39682,7 @@ var render = function() {
                       }
                     }
                   },
-                  [_vm._v("\n            Editar\n          ")]
+                  [_vm._v("\n                  Editar\n               ")]
                 )
               ]),
               _vm._v(" "),
@@ -39674,7 +39697,11 @@ var render = function() {
                       }
                     }
                   },
-                  [_vm._v("\n            Agregar vehículo\n          ")]
+                  [
+                    _vm._v(
+                      "\n                  Agregar vehículo\n               "
+                    )
+                  ]
                 )
               ]),
               _vm._v(" "),
@@ -39689,7 +39716,7 @@ var render = function() {
                       }
                     }
                   },
-                  [_vm._v("\n            Ver\n          ")]
+                  [_vm._v("\n                  Ver\n               ")]
                 )
               ]),
               _vm._v(" "),
@@ -39704,7 +39731,7 @@ var render = function() {
                       }
                     }
                   },
-                  [_vm._v("\n            Eliminar\n          ")]
+                  [_vm._v("\n                  Eliminar\n               ")]
                 )
               ])
             ])
@@ -39714,7 +39741,7 @@ var render = function() {
       )
     ]),
     _vm._v(" "),
-    _vm._m(2),
+    _vm._m(3),
     _vm._v(" "),
     _c("div", { staticClass: "w3-modal", attrs: { id: "id01" } }, [
       _c("div", { staticClass: "w3-modal-content" }, [
@@ -39940,9 +39967,9 @@ var render = function() {
                   },
                   [
                     _vm._v(
-                      "\n              " +
+                      "\n                     " +
                         _vm._s(_vm.saving ? "Guardando..." : "Guardar") +
-                        "\n            "
+                        "\n                  "
                     )
                   ]
                 )
@@ -39976,7 +40003,7 @@ var render = function() {
           _vm.loading
             ? _c(
                 "div",
-                { staticClass: "w3-panel w3-blue w3-display-container" },
+                { staticClass: "w3-panel w3-pale-green w3-display-container" },
                 [_c("p", [_vm._v("Loading...")])]
               )
             : _vm._e(),
@@ -40108,9 +40135,9 @@ var render = function() {
                   },
                   [
                     _vm._v(
-                      "\n              " +
+                      "\n                     " +
                         _vm._s(_vm.saving ? "Guardando..." : "Guardar") +
-                        "\n            "
+                        "\n                  "
                     )
                   ]
                 )
@@ -40249,9 +40276,9 @@ var render = function() {
                   },
                   [
                     _vm._v(
-                      "\n              " +
+                      "\n                     " +
                         _vm._s(_vm.saving ? "Guardando..." : "Guardar") +
-                        "\n            "
+                        "\n                  "
                     )
                   ]
                 )
@@ -40285,7 +40312,7 @@ var render = function() {
           _vm.loading
             ? _c(
                 "div",
-                { staticClass: "w3-panel w3-blue w3-display-container" },
+                { staticClass: "w3-panel w3-pale-green w3-display-container" },
                 [_c("p", [_vm._v("Loading...")])]
               )
             : _vm._e(),
@@ -40295,7 +40322,7 @@ var render = function() {
               "table",
               { staticClass: "w3-table-all" },
               [
-                _vm._m(3),
+                _vm._m(4),
                 _vm._v(" "),
                 _vm._l(_vm.vehiculos, function(item) {
                   return _c("tr", { key: item.id }, [
@@ -40334,31 +40361,45 @@ var staticRenderFns = [
                   "document.getElementById('id01').style.display = 'block'"
               }
             },
-            [_vm._v("\n          + Nuevo Cliente\n        ")]
+            [_vm._v("\n               + Nuevo Cliente\n            ")]
           )
         ])
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "w3-row" }, [
+      _c("div", { staticClass: "w3-col m4 l3" }, [
+        _c("h2", [_vm._v("Clientes Registrados")])
       ]),
       _vm._v(" "),
-      _c("form", [
-        _c("div", { staticClass: "w3-col m7 l8" }, [
-          _c("div", [
-            _c("input", {
-              staticClass: "w3-input w3-border",
-              attrs: { value: "", type: "search", name: "buscar" }
-            })
-          ])
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "w3-col m1 l1" }, [
-          _c("div", [
-            _c(
-              "button",
-              {
-                staticClass: "w3-button w3-border w3-blue",
-                attrs: { type: "submit" }
-              },
-              [_vm._v("\n            Buscar\n          ")]
-            )
+      _c("div", { staticClass: "w3-col m4 l4" }, [_c("p")]),
+      _vm._v(" "),
+      _c("div", { staticClass: "w3-col m4 l4" }, [
+        _c("form", [
+          _c("div", { staticClass: "w3-col m11 l11" }, [
+            _c("div", [
+              _c("input", {
+                staticClass: "w3-input w3-border",
+                attrs: { value: "", type: "search", name: "buscar" }
+              })
+            ])
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "w3-col m1 l1" }, [
+            _c("div", [
+              _c(
+                "button",
+                {
+                  staticClass: "w3-button w3-border w3-blue",
+                  attrs: { type: "submit" }
+                },
+                [_vm._v("\n                     Buscar\n                  ")]
+              )
+            ])
           ])
         ])
       ])
@@ -57422,8 +57463,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! C:\Users\drupe\Desktop\Laravel\parqueadero_laravel_vue\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! C:\Users\drupe\Desktop\Laravel\parqueadero_laravel_vue\resources\sass\app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! C:\Users\drupe\OneDrive\Escritorio\laravel\parqueadero_laravel_vue\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! C:\Users\drupe\OneDrive\Escritorio\laravel\parqueadero_laravel_vue\resources\sass\app.scss */"./resources/sass/app.scss");
 
 
 /***/ })
